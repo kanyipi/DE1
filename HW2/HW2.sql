@@ -14,9 +14,9 @@ CREATE TABLE employee
 employee_name VARCHAR(32) NOT NULL,
 PRIMARY KEY(id));
 	 
-SELECT * FROM birdstrikes LIMIT 144,1;
+SELECT state FROM birdstrikes LIMIT 144,1;
 
--- 147		2000-01-19	No damage	UNKNOWN	Washington		2002-07-14	Medium	0	
+-- Tennessee
 
 SELECT flight_date FROM birdstrikes ORDER BY flight_date ASC LIMIT 1;
 
