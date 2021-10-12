@@ -1,0 +1,34 @@
+﻿  {
+    "department": {
+      "program": [
+        {
+          "title": "Business Analytics",
+          "programid": 1,
+          "course": [
+            {
+              "de1": {
+                "courseid": "1",
+                "teacher": "Laszlo"
+              },
+              "da1": {
+                "courseid": "2",
+                "teacher": "Gabor"
+              }
+            }
+          ],
+          "person": [
+            {
+              "Peter Kaiser": {
+                "personid": "1",
+                "courseid": "1,2"
+              },
+              "Daniel Gyebnar": {
+                "personid": "2",
+                "courseid": "1,"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
