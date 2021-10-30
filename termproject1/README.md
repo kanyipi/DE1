@@ -1,9 +1,12 @@
 # Term Project 1 Documentation
-## Dataset
+Peter Kaiser Termproject 1 using NBA 17-18 dataset.
+## Operational Layer
 Finding the data set was the hardest pard of the project and I don't think it is the perfect dataset.
 I found a dataset about 17-18 NBA season at [git-repo-url]. It's from  [basketball-reference]. 
 I did not use the top scorers table.
 There are 6 tables which I used players, playe_stats, coaches, coach_stats, teams, team_stats,
+The ER diagram is: PLACEHOLDER
+
 These are the total stats for the 17-18 season.
 The 3 main tables are the stats for players, coaches, and teams. 
 
@@ -47,15 +50,35 @@ Fran -- Franchise Metric
 Care -- Career Metric
 PO -- Play Off Metric
 
-## Questions
+## Analytics Plan
 
 I would have some questions about the validity of the dataset, that is for example if we calculate the fieldgoals of all its players we get the fieldgoals of the team.
 
 My other questions would be:
 
-Do Players average eFGP affect the teams Win rate?
-Do Players Points effect manager winrate for this season?
+Do Players average eFGP affect the teams rank?
 Does the winner of the season have the oldest players?
+Check the metric from the two Los Angeles based teams?
+
+For these questions I think I would need 
+Player, FG, PTS, eFGP from player_stats
+Pos, Age from players
+TeamID, TeamName from teams
+FG, PTS from team_stats
+Name from coaches
+SeasW, SeasL from coach_stats
+
+## Analytical layer and ETL
+
+The analytical layer is created by inner joining the tables and selecting the needed columns. The ETL is called on every insertion of the players table and updates everyday for a week. 
+PLACEHOLDER
+
+## Project
+Dump20211030.sql is the file for easy load
+data_import.sql is the file for the hard load
+datawarehouse has everything else with comments implicating what eahc part does
+
+
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 

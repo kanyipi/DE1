@@ -1,5 +1,38 @@
 USE termproject;
 
+-- stored proc to search for player/coach/team
+
+DROP PROCEDURE IF EXISTS GetRecordsForSearch;
+
+DELIMITER $$
+
+CREATE PROCEDURE GetRecordsForSearch (
+	IN  searchName VARCHAR(25),
+    IN  searchTable VARCHAR(25)
+)
+BEGIN
+
+	IF searchTable = 'coach' THEN 
+		SELECT * FROM coaches WHERE Name LIKE CONCAT('%',searchName,'%');
+    END IF;
+    
+    IF searchTable = 'player' THEN 
+		SELECT * FROM players WHERE Name LIKE CONCAT('%',searchName,'%');
+    END IF;
+    
+    IF searchTable = 'team' THEN 
+		SELECT * FROM teams WHERE TeamName LIKE CONCAT('%',searchName,'%');
+    END IF;
+    
+END$$
+DELIMITER ;
+
+-- example searches
+
+CALL GetRecordsForSearch ('Alvin','coach');
+CALL GetRecordsForSearch ('LeBron','player');
+CALL GetRecordsForSearch ('Los Angeles','team');
+
 -- some sanity checks
 
 SELECT * FROM coach_stats;
@@ -81,6 +114,7 @@ BEGIN
 		coaches USING (TeamID)
     INNER JOIN
 		coach_stats ON coaches.Name=coach_stats.Name;
+        
 END //
 DELIMITER ;
 
@@ -200,3 +234,48 @@ SELECT * FROM log_new_players;
 
 -- to drop it
 -- DROP EVENT IF EXISTS CreateFullStatsTableEvent;
+
+-- data marts
+
+DROP VIEW IF EXISTS field_goals;
+
+-- calculate the fieldgoals of all its players we get the fieldgoals of the team
+
+CREATE VIEW field_goals AS
+SELECT TeamName, SumFromPlayers-TeamFieldGoals AS FieldGoalDifference FROM (SELECT sum(PlayerFieldGoals) as 'SumFromPlayers', TeamName, TeamFieldGoals FROM full_stats_table GROUP BY TeamName ) AS A;
+
+SELECT * FROM field_goals;
+
+-- there are 3 teams with buig differences so there are some problems with the dataset
+
+DROP VIEW IF EXISTS efgp_rank;
+
+-- Do Players average eFGP affect the teams rank?
+
+CREATE VIEW efgp_rank AS
+SELECT avg(EffectiveFieldGoalPercentage) as 'AvgEFGP', TeamName, TeamRank FROM full_stats_table GROUP BY TeamName;
+
+SELECT * FROM efgp_rank;
+
+-- there is no relationship as avg(EffectiveFieldGoalPercentage) is a dumb thing to calculate as for example if a player plays 1 game and has 999 avg then it will inflate the avg greatly
+
+DROP VIEW IF EXISTS avgage_rank;
+
+-- Does the winner of the season have the oldest players?
+
+CREATE VIEW avgage_rank AS
+SELECT avg(PlayerAge) as 'AvgAge', TeamName, TeamRank FROM full_stats_table GROUP BY TeamName;
+
+ SELECT * FROM avgage_rank;
+
+-- this avg is still bad as for example if an old player plays 1 game it counts the same as if some 20 year old plays 20 games,
+-- maybe a better metric would be avg based on games played for that team this season
+
+DROP VIEW IF EXISTS clippers_lakers;
+
+-- Check the metric from the two Los Angeles based teams?
+
+CREATE VIEW clippers_lakers AS
+SELECT * FROM full_stats_table WHERE TeamName LIKE "Los Angeles%";
+
+SELECT * FROM clippers_lakers;

@@ -255,35 +255,3 @@ IGNORE 1 LINES
 SELECT * FROM top_scorers;
 */
 
--- stored proc to search for player/coach/team
-
-DROP PROCEDURE IF EXISTS GetRecordsForSearch;
-
-DELIMITER $$
-
-CREATE PROCEDURE GetRecordsForSearch (
-	IN  searchName VARCHAR(25),
-    IN  searchTable VARCHAR(25)
-)
-BEGIN
-
-	IF searchTable = 'coach' THEN 
-		SELECT * FROM coaches WHERE Name LIKE CONCAT('%',searchName,'%');
-    END IF;
-    
-    IF searchTable = 'player' THEN 
-		SELECT * FROM players WHERE Name LIKE CONCAT('%',searchName,'%');
-    END IF;
-    
-    IF searchTable = 'team' THEN 
-		SELECT * FROM teams WHERE TeamName LIKE CONCAT('%',searchName,'%');
-    END IF;
-    
-END$$
-DELIMITER ;
-
--- example searches
-
-CALL GetRecordsForSearch ('Alvin','coach');
-CALL GetRecordsForSearch ('LeBron','player');
-CALL GetRecordsForSearch ('Los Angeles','team');
