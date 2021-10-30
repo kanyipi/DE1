@@ -81,7 +81,7 @@ The analytical layer is created by inner joining the tables and selecting the ne
 ## Project
 * Dump20211030.sql is the file for easy load
 * data_import.sql is the file for the hard load
-* datawarehouse has everything else with comments implicating what eahc part does
+* datawarehouse has everything else with comments implicating what each part does
 
 
 
