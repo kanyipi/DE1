@@ -1,7 +1,10 @@
-DROP SCHEMA IF EXISTS termproject;
+-- please run Dump20211030.sql for to have an easy import
+
+-- DROP SCHEMA IF EXISTS termproject;
 CREATE SCHEMA termproject;
 
 SHOW VARIABLES LIKE "secure_file_priv";
+
 -- please put the cvs the data folder to the path of the secure in file
 
 -- SET @infilePath='C:\ProgramData\MySQL\MySQL Server 8.0\Uploads\' doesnt work

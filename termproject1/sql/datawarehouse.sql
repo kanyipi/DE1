@@ -1,3 +1,5 @@
+USE termproject;
+
 -- some sanity checks
 
 SELECT * FROM coach_stats;
