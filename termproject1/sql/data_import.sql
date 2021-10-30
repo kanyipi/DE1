@@ -1,14 +1,28 @@
-drop schema if exists termproject;
-create schema termproject;
+DROP SCHEMA IF EXISTS termproject;
+CREATE SCHEMA termproject;
 
 SHOW VARIABLES LIKE "secure_file_priv";
--- please put the cvs in the path of the secure in file
+-- please put the cvs the data folder to the path of the secure in file
 
-SET GLOBAL local_infile = true;
+-- SET @infilePath='C:\ProgramData\MySQL\MySQL Server 8.0\Uploads\' doesnt work
+-- SET @endLine ='\r';
+-- can not use these variables at loads so please
+-- and replace all occurences of 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Coaches.csv'
+-- to the output of the above command
+-- and IF the loads don't at first try then 
+-- replace all occurences of '\r' to either '\n', '\n\r', '\r\n' or what works on your system
+-- to the output of the above command as I couldnt find a way to make LOAD DATA INFILE work with a variable
+
+
 SHOW VARIABLES LIKE "local_infile";
 
--- I found this data set https://github.com/carissaallen/NBA-Database here there are 7 tables of the 2017-18 NBA season
+-- IF off please run
+-- SET GLOBAL local_infile = true;
+
 USE termproject;
+
+-- I found this data set https://github.com/carissaallen/NBA-Database here there are 7 tables of the 2017-18 NBA season
+-- loading coach_stats table
 
 DROP TABLE IF EXISTS coach_stats;
 
@@ -42,17 +56,21 @@ LINES TERMINATED BY '\r'
 IGNORE 1 LINES 
 (Name,Team,SeasG,SeasW,SeasL,FranG,FranW,FranL,CareW,CareL,CareWP,@v_POSeasG,@v_POSeasW,@v_POSeasL,@v_POFranG,@v_POFranW,@v_POFranL,@v_POCareG,@v_POCareW,@v_POCareL)
 SET
-POSeasG = nullif(@v_POSeasG, ''),
-POSeasW = nullif(@v_POSeasW, ''),
-POSeasL = nullif(@v_POSeasL, ''),
-POFranG = nullif(@v_POFranG, ''),
-POFranW = nullif(@v_POFranW, ''),
-POFranL = nullif(@v_POFranL, ''),
-POCareG = nullif(@v_POCareG, ''),
-POCareW = nullif(@v_POCareW, ''),
-POCareL = nullif(@v_POCareL, '');
+POSeasG = nullIF(@v_POSeasG, ''),
+POSeasW = nullIF(@v_POSeasW, ''),
+POSeasL = nullIF(@v_POSeasL, ''),
+POFranG = nullIF(@v_POFranG, ''),
+POFranW = nullIF(@v_POFranW, ''),
+POFranL = nullIF(@v_POFranL, ''),
+POCareG = nullIF(@v_POCareG, ''),
+POCareW = nullIF(@v_POCareW, ''),
+POCareL = nullIF(@v_POCareL, '');
 
-select * from coach_stats;
+-- checking to see IF it worked
+
+SELECT * FROM coach_stats;
+
+-- loading coaches table
 
 DROP TABLE IF EXISTS coaches;
 
@@ -68,7 +86,11 @@ LINES TERMINATED BY '\r'
 IGNORE 1 LINES 
 (Name,TeamID);
 
-select * from coaches;
+-- checking to see IF it worked
+
+SELECT * FROM coaches;
+
+-- loading player_stats table
 
 DROP TABLE IF EXISTS player_stats;
 
@@ -109,13 +131,17 @@ LINES TERMINATED BY '\r'
 IGNORE 1 LINES 
 (Player,Tm,Gms,Gstart,MP,FG,FGA,FGP,ThreeP,ThreePA,ThreePP,TwoP,TwoPA,TwoPP,eFGP,FT,FTA,FTP,ORB,DRB,TRB,AST,@v_STL,@v_BLK,@v_TOV,@v_PF,@v_PTS)
 SET
-PTS = nullif(@v_PTS, ''),
-PF = nullif(@v_PF, ''),
-BLK = nullif(@v_BLK, ''),
-TOV = nullif(@v_TOV, ''),
-STL = nullif(@v_STL, '');
+PTS = nullIF(@v_PTS, ''),
+PF = nullIF(@v_PF, ''),
+BLK = nullIF(@v_BLK, ''),
+TOV = nullIF(@v_TOV, ''),
+STL = nullIF(@v_STL, '');
 
-select * from player_stats;
+-- checking to see IF it worked
+
+SELECT * FROM player_stats;
+
+-- loading players table
 
 DROP TABLE IF EXISTS players;
 
@@ -132,12 +158,16 @@ LINES TERMINATED BY '\r'
 IGNORE 1 LINES 
 (Name,Pos,Age);
 
-select * from players;
+-- checking to see IF it worked
+
+SELECT * FROM players;
+
+-- loading team_stats table
 
 DROP TABLE IF EXISTS team_stats;
 
 CREATE TABLE team_stats (
-TeamId    VARCHAR(100)
+TeamID    VARCHAR(100)
 ,Gms	  INT
 ,MP       INT
 ,FG       INT
@@ -161,7 +191,7 @@ TeamId    VARCHAR(100)
 ,TOV      INT
 ,PF       INT
 ,PTS      INT
-,PRIMARY KEY(TeamId));
+,PRIMARY KEY(TeamID));
 
 LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Team_Stats.csv'
 INTO TABLE team_stats
@@ -170,7 +200,14 @@ LINES TERMINATED BY '\r'
 IGNORE 1 LINES 
 (TeamID,Gms,MP,FG,FGA,FGP,ThreeP,ThreePA,ThreePP,TwoP,TwoPA,TwoPP,FT,FTA,FTP,ORB,DRB,TRB,AST,STL,BLK,TOV,PF,PTS);
 
-select * from team_stats;
+-- I only could load TeamID as VARCHAR
+-- Cant alter it same for teams
+-- ALTER TABLE team_stats MODIFY TeamID INT;
+
+-- checking to see IF it worked
+SELECT * FROM team_stats;
+
+-- loading teams table
 
 DROP TABLE IF EXISTS teams;
 
@@ -188,7 +225,9 @@ LINES TERMINATED BY '\r'
 IGNORE 1 LINES 
 (TeamID,TeamName,TeamAbbr,Location);
 
-select * from teams;
+-- checking to see IF it worked
+
+SELECT * FROM teams;
 
 /* This table is not important (and I couldnt read it in:))
 DROP TABLE IF EXISTS top_scorers;
@@ -210,6 +249,38 @@ LINES TERMINATED BY '\r'
 IGNORE 1 LINES 
 (Points,Name,Year,TeamName,OppTeamName,TeamScore,OppTeamScore,MinsPlayed);
 
-select * from top_scorers;
+SELECT * FROM top_scorers;
 */
 
+-- stored proc to search for player/coach/team
+
+DROP PROCEDURE IF EXISTS GetRecordsForSearch;
+
+DELIMITER $$
+
+CREATE PROCEDURE GetRecordsForSearch (
+	IN  searchName VARCHAR(25),
+    IN  searchTable VARCHAR(25)
+)
+BEGIN
+
+	IF searchTable = 'coach' THEN 
+		SELECT * FROM coaches WHERE Name LIKE CONCAT('%',searchName,'%');
+    END IF;
+    
+    IF searchTable = 'player' THEN 
+		SELECT * FROM players WHERE Name LIKE CONCAT('%',searchName,'%');
+    END IF;
+    
+    IF searchTable = 'team' THEN 
+		SELECT * FROM teams WHERE TeamName LIKE CONCAT('%',searchName,'%');
+    END IF;
+    
+END$$
+DELIMITER ;
+
+-- example searches
+
+CALL GetRecordsForSearch ('Alvin','coach');
+CALL GetRecordsForSearch ('LeBron','player');
+CALL GetRecordsForSearch ('Los Angeles','team');
